@@ -86,7 +86,6 @@ int encrypt(const char *plaintext, char *ciphertext, int key)
     strgCopy("__EOM__", ciphertext);
 
     return count;
-    abort();
 }
 
 int decrypt(const char *ciphertext, char *plaintext, int key)
@@ -219,5 +218,4 @@ int decrypt(const char *ciphertext, char *plaintext, int key)
     *plaintext = '\0';
 
     return count;
-    abort();
 }

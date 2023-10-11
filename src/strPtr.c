@@ -18,7 +18,6 @@ int strgLen(char *s)
     }
 
     return count;
-    abort();
 }
 void strgCopy(char *s, char *d)
 {
@@ -50,7 +49,6 @@ void strgCopy(char *s, char *d)
     }
 
     *d = '\0';
-    // abort();
 }
 void strgChangeCase(char *s)
 {
@@ -75,8 +73,6 @@ void strgChangeCase(char *s)
         // If non-alphabetic character, don't change.
         s++;
     }
-
-    // abort();
 }
 int strgDiff(char *s1, char *s2)
 {
@@ -103,7 +99,6 @@ int strgDiff(char *s1, char *s2)
 
     // Equal strings.
     return -1;
-    abort();
 }
 void strgInterleave(char *s1, char *s2, char *d)
 {
@@ -160,5 +155,4 @@ void strgInterleave(char *s1, char *s2, char *d)
             next = 1;
         }
     }
-    // abort();
 }
