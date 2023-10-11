@@ -1,18 +1,5 @@
-//
-//
-//
-// ADD BACK LATER
-// #include "global.h"
-//
-//
-//
-
-// REMOVE LATER.
-#include <assert.h>
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
+#include "../include/global.h"
+#include "strPtr.c"
 
 /**
  *  Feel free to use the functions that you made in strPtr.c
@@ -20,12 +7,38 @@
 
 int encrypt(const char *plaintext, char *ciphertext, int key)
 {
+    // Edge cases.
+    if (*plaintext == '\0')
+    {
+        strgCopy("undefined__EOM__", ciphertext);
+        return 0;
+    }
+
+    // Make sure text has alphanumeric charcaters.
+    char *p = plaintext;
+
+    while (*p != '\0')
+    {
+        if (!((*p >= '0' && *p <= '9') || (*p >= 'a' && *p <= 'z') || (*p >= 'A' && *p <= 'Z')))
+        {
+            strgCopy("undefined__EOM__", ciphertext);
+            return 0;
+        }
+
+        p++;
+    }
+
+    // Make sure ciphertext can hold it.
+    if (strgLen(ciphertext) < strgLen(plaintext) + 7)
+    {
+        return -1;
+    }
+
     if (plaintext == NULL || ciphertext == NULL)
     {
         return -2;
     }
 
-    // Add EOM edge case.
     int count = 0;
 
     while (*plaintext != '\0')
@@ -41,6 +54,7 @@ int encrypt(const char *plaintext, char *ciphertext, int key)
             }
 
             *ciphertext = cipher;
+            count++;
         }
 
         // Lowercase letters.
@@ -52,6 +66,7 @@ int encrypt(const char *plaintext, char *ciphertext, int key)
             }
 
             *ciphertext = cipher;
+            count++;
         }
 
         // Uppercase letters.
@@ -63,12 +78,15 @@ int encrypt(const char *plaintext, char *ciphertext, int key)
             }
 
             *ciphertext = cipher;
+            count++;
         }
 
-        count++;
         plaintext++;
         ciphertext++;
     }
+
+    // Add __EOM__ marker.
+    strgCopy("__EOM__", ciphertext);
 
     return count;
     abort();
@@ -76,6 +94,37 @@ int encrypt(const char *plaintext, char *ciphertext, int key)
 
 int decrypt(const char *ciphertext, char *plaintext, int key)
 {
+    // Edge cases.
+    if (strgLen(plaintext) == 0)
+    {
+        return 0;
+    }
+
+    // Check for EOM marker.
+    char *p = ciphertext;
+    while (true)
+    {
+        if (*p == '\0')
+        {
+            // Indicates EOM marker is not present.
+            return -1;
+        }
+
+        if (strgDiff("__EOM__", p) == -1)
+        {
+            // EOM marker is present.
+            break;
+        }
+
+        p++;
+    }
+
+    // Make sure plaintext is long enough.
+    if (strgLen(plaintext) < strgLen(ciphertext) - 7)
+    {
+        return -2;
+    }
+
     if (plaintext == NULL || ciphertext == NULL)
     {
         return -2;
@@ -86,6 +135,12 @@ int decrypt(const char *ciphertext, char *plaintext, int key)
 
     while (*ciphertext != '\0')
     {
+        // Check for EOM marker.
+        if (strgDiff("__EOM__", ciphertext) == -1)
+        {
+            break;
+        }
+
         char cipher = *ciphertext - key;
 
         // Digits.
@@ -126,18 +181,8 @@ int decrypt(const char *ciphertext, char *plaintext, int key)
         plaintext++;
     }
 
+    *plaintext = '\0';
+
     return count;
     abort();
 }
-
-// int main()
-// {
-//     char s[] = "Dtf331";
-//     char d[] = "000000";
-
-//     int count = decrypt(s, d, 1);
-//     printf("%d\n", count);
-//     printf("%s\n", d);
-
-//     return 0;
-// }

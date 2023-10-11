@@ -1,19 +1,4 @@
-
-//
-//
-//
-// ADD BACK LATER
-// #include "global.h"
-//
-//
-//
-
-// REMOVE LATER.
-#include <assert.h>
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
+#include "../include/global.h"
 
 int strgLen(char *s)
 {
@@ -32,7 +17,7 @@ int strgLen(char *s)
     }
 
     return count;
-    // abort();
+    abort();
 }
 void strgCopy(char *s, char *d)
 {
@@ -41,9 +26,6 @@ void strgCopy(char *s, char *d)
     {
         return;
     }
-
-    printf("*s: %d\n", strgLen(s));
-    printf("*d: %d\n", strgLen(d));
 
     // Make sure you don't overflow.
     if (strgLen(d) < strgLen(s))
@@ -97,14 +79,14 @@ void strgChangeCase(char *s)
 }
 int strgDiff(char *s1, char *s2)
 {
-    if (s1 == NULL || s2 == NULL)
+    if (s1 == NULL || s2 == NULL || *s1 == '\0' || *s2 == '\0')
     {
         return -2;
     }
 
     int i = 0;
 
-    while (*s1 != '\0')
+    while (*s1 != '\0' || *s2 != '\0')
     {
         if (*s1 != *s2)
         {
@@ -173,17 +155,4 @@ void strgInterleave(char *s1, char *s2, char *d)
     }
 
     // abort();
-}
-
-int main()
-{
-    char s[] = "hello";
-    char c[3];
-
-    // strgCopy(s, c);
-    // printf("%s", c);
-
-    printf("%d", strgLen(c));
-
-    return 0;
 }
