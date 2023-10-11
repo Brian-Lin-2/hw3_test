@@ -1,5 +1,4 @@
 #include "../include/global.h"
-#include "strPtr.c"
 
 /**
  *  Feel free to use the functions that you made in strPtr.c
@@ -49,41 +48,27 @@ int encrypt(const char *plaintext, char *ciphertext, int key)
 
     while (*plaintext != '\0')
     {
-        char cipher = *plaintext + key;
-
         // Digits.
         if (*plaintext >= '0' && *plaintext <= '9')
         {
-            if (cipher > '9')
-            {
-                cipher = (cipher % '9' - 1) + '0';
-            }
-
-            *ciphertext = cipher;
+            // Makes sure there's no overflow.
+            *ciphertext = '0' + ((*plaintext - '0' + key) % 10);
             count++;
         }
 
         // Lowercase letters.
         else if (*plaintext >= 'a' && *plaintext <= 'z')
         {
-            if (cipher > 'z')
-            {
-                cipher = (cipher % 'z' - 1) + 'a';
-            }
-
-            *ciphertext = cipher;
+            // Makes sure there's no overflow.
+            *ciphertext = 'a' + ((*plaintext - 'a' + key) % 26);
             count++;
         }
 
         // Uppercase letters.
         else if (*plaintext >= 'A' && *plaintext <= 'Z')
         {
-            if (cipher > 'Z')
-            {
-                cipher = (cipher % 'Z' - 1) + 'A';
-            }
-
-            *ciphertext = cipher;
+            // Makes sure there's no overflow.
+            *ciphertext = 'A' + ((*plaintext - 'A' + key) % 26);
             count++;
         }
 
@@ -155,7 +140,7 @@ int decrypt(const char *ciphertext, char *plaintext, int key)
             return -1;
         }
 
-        if (strgDiff("__EOM__", p2) == -1)
+        if (strgDiff("__EOM__", p2) == -1 || strgDiff("__EOM__", p2) > 6)
         {
             // EOM marker is present.
             break;
@@ -164,63 +149,60 @@ int decrypt(const char *ciphertext, char *plaintext, int key)
         p2++;
     }
 
-    // Make sure plaintext is long enough.
-    if (strgLen(plaintext) < strgLen(ciphertext) - 7)
-    {
-        return -2;
-    }
-
     if (plaintext == NULL || ciphertext == NULL)
     {
         return -2;
     }
 
-    // Add EOM edge case.
     int count = 0;
 
     while (*ciphertext != '\0')
     {
-        // Check for EOM marker.
-        if (strgDiff("__EOM__", ciphertext) == -1)
+        // Make sure plaintext still has room.
+        if (*plaintext == '\0')
         {
             break;
         }
 
-        char cipher = *ciphertext - key;
+        // Check for EOM marker.
+        if (strgDiff("__EOM__", ciphertext) == -1 || strgDiff("__EOM__", ciphertext) > 6)
+        {
+            break;
+        }
 
         // Digits.
         if (*ciphertext >= '0' && *ciphertext <= '9')
         {
-            if (cipher < '0')
+            if (key > 10)
             {
-                cipher = '9' + (cipher - '0' + 1);
+                key %= 10;
             }
 
-            *plaintext = cipher;
+            *plaintext = '0' + ((*ciphertext - '0' - key + 10) % 10);
             count++;
         }
 
         // Lowercase letters.
         else if (*ciphertext >= 'a' && *ciphertext <= 'z')
         {
-            if (cipher < 'a')
+            if (key > 26)
             {
-                cipher = 'z' + (cipher - 'a' + 1);
+                key %= 26;
             }
 
-            *plaintext = cipher;
+            *plaintext = 'a' + ((*ciphertext - 'a' - key + 26) % 26);
             count++;
         }
 
         // Uppercase letters.
         else if (*ciphertext >= 'A' && *ciphertext <= 'Z')
         {
-            if (cipher < 'A')
+            if (key > 26)
             {
-                cipher = 'Z' + (cipher - 'A' + 1);
+                key %= 26;
             }
 
-            *plaintext = cipher;
+            *plaintext = 'A' + ((*ciphertext - 'A' - key + 26) % 26);
             count++;
         }
 
