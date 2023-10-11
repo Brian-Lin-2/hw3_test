@@ -8,7 +8,7 @@
 int encrypt(const char *plaintext, char *ciphertext, int key)
 {
     // Edge cases.
-    if (*plaintext == '\0')
+    if (strgLen(plaintext) == 0)
     {
         strgCopy("undefined__EOM__", ciphertext);
         return 0;
@@ -16,16 +16,22 @@ int encrypt(const char *plaintext, char *ciphertext, int key)
 
     // Make sure text has alphanumeric charcaters.
     char *p = plaintext;
+    int alpnum = 0;
 
     while (*p != '\0')
     {
-        if (!((*p >= '0' && *p <= '9') || (*p >= 'a' && *p <= 'z') || (*p >= 'A' && *p <= 'Z')))
+        if ((*p >= '0' && *p <= '9') || (*p >= 'a' && *p <= 'z') || (*p >= 'A' && *p <= 'Z'))
         {
-            strgCopy("undefined__EOM__", ciphertext);
-            return 0;
+            alpnum++;
         }
 
         p++;
+    }
+
+    if (alpnum == 0)
+    {
+        strgCopy("undefined__EOM__", ciphertext);
+        return 0;
     }
 
     // Make sure ciphertext can hold it.
@@ -81,6 +87,12 @@ int encrypt(const char *plaintext, char *ciphertext, int key)
             count++;
         }
 
+        // Ignore. Don't increment count.
+        else
+        {
+            *ciphertext = *plaintext;
+        }
+
         plaintext++;
         ciphertext++;
     }
@@ -100,23 +112,56 @@ int decrypt(const char *ciphertext, char *plaintext, int key)
         return 0;
     }
 
-    // Check for EOM marker.
-    char *p = ciphertext;
-    while (true)
+    // Check for empty.
+    if (strgDiff("__EOM__", ciphertext) == -1)
     {
-        if (*p == '\0')
-        {
-            // Indicates EOM marker is not present.
-            return -1;
-        }
+        strgCopy("undefined", plaintext);
+        return 0;
+    }
 
+    // Make sure text has alphanumeric charcaters.
+    char *p = plaintext;
+    int alpnum = 0;
+
+    while (*p != '\0')
+    {
         if (strgDiff("__EOM__", p) == -1)
         {
             // EOM marker is present.
             break;
         }
 
+        if ((*p >= '0' && *p <= '9') || (*p >= 'a' && *p <= 'z') || (*p >= 'A' && *p <= 'Z'))
+        {
+            alpnum++;
+        }
+
         p++;
+    }
+
+    if (alpnum == 0)
+    {
+        strgCopy("undefined__EOM__", ciphertext);
+        return 0;
+    }
+
+    // Check for EOM marker.
+    char *p2 = ciphertext;
+    while (true)
+    {
+        if (*p2 == '\0')
+        {
+            // Indicates EOM marker is not present.
+            return -1;
+        }
+
+        if (strgDiff("__EOM__", p2) == -1)
+        {
+            // EOM marker is present.
+            break;
+        }
+
+        p2++;
     }
 
     // Make sure plaintext is long enough.
@@ -152,6 +197,7 @@ int decrypt(const char *ciphertext, char *plaintext, int key)
             }
 
             *plaintext = cipher;
+            count++;
         }
 
         // Lowercase letters.
@@ -163,6 +209,7 @@ int decrypt(const char *ciphertext, char *plaintext, int key)
             }
 
             *plaintext = cipher;
+            count++;
         }
 
         // Uppercase letters.
@@ -174,9 +221,15 @@ int decrypt(const char *ciphertext, char *plaintext, int key)
             }
 
             *plaintext = cipher;
+            count++;
         }
 
-        count++;
+        // Ignore. Don't increment count.
+        else
+        {
+            *plaintext = *ciphertext;
+        }
+
         ciphertext++;
         plaintext++;
     }
